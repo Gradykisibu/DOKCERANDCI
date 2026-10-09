@@ -1,51 +1,24 @@
-const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const colors = require("colors");
+require("dotenv").config()
 
-dotenv.config();
-colors.enable();
+const { createApp } = require("./app")
+
 
 const Anim = require("./database/anim.model");
 const connect = require("./database/connect");
 
-const app = express();
-
-app.use(
-  cors({
-    origin: "*",
-  })
-);
-
-app.use(express.json());
-
-app.get("/", (req, res) => {
-  console.log("Hello World!".rainbow);
-
-  res.send("Hello World!");
-});
-
-app.get("/api/anime", async (req, res) => {
-  const anime = await Anim.find();
-  res.json(anime);
-});
-
-app.post("/api/anime", async (req, res) => {
+async function start() {
   try {
-    const anime = new Anim(req.body);
-    await anime.save();
+    await connect();
 
-    res.json(anime);
+    const app = createApp(Anim);
+
+    app.listen(8000, () => {
+      console.log("Server listening on port 8000");
+    });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    console.error("Failed to start server:", err);
+    process.exit(1);
   }
-});
+}
 
-  // connect to the database
-  connect();
-
-app.listen(8000, () => {
-  console.log("server listening on port 8000");
-
-});
+start();

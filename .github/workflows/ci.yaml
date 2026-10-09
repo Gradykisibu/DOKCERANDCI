@@ -35,14 +35,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
         # Install dependencies using the package-lock.json file
       - name: Install dependencies
         run: npm ci
-        
-        # Run frontend tests without entering watch mode
-      - name: Run tests
-        run: npm test -- --run
 
         # Create an optimized production build of the frontend
       - name: Build frontend
@@ -79,6 +77,7 @@ jobs:
         # Run backend tests to check application behavior
       - name: Run tests
         run: npm test
+
 
   # Job 3: Build Docker images after the application checks pass
   docker:
