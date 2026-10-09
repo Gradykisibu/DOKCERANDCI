@@ -1,0 +1,84 @@
+# Docker Compose configuration
+version: "3.8"
+
+services:
+
+  # --------------------------------------------------
+  # FRONTEND
+  # --------------------------------------------------
+  # Runs the frontend application.
+  # The Dockerfile is located in ./frontend.
+  web:
+    build: ./frontend
+
+    # Start the API before starting the frontend.
+    depends_on:
+      - api
+
+    # HOST_PORT:CONTAINER_PORT
+    # Open the frontend at http://localhost:5173
+    ports:
+      - 5173:5173
+
+    # Environment variables available to the frontend.
+    environment:
+      # URL used by the frontend to communicate with the API.
+      VITE_API_URL: http://localhost:8000
+
+    # Automatically react to file changes during development.
+    develop:
+      watch:
+
+        # Rebuild if frontend dependencies change.
+        - path: ./frontend/package.json
+          action: rebuild
+
+        - path: ./frontend/package-lock.json
+          action: rebuild
+
+        # Sync source-code changes into the container.
+        - path: ./frontend
+          target: /app
+          action: sync
+
+
+  # --------------------------------------------------
+  # BACKEND API
+  # --------------------------------------------------
+  # Runs the backend/API application.
+  # The Dockerfile is located in ./backend.
+  api:
+    build: ./backend
+
+    # HOST_PORT:CONTAINER_PORT
+    # Open the API at http://localhost:8000
+    ports:
+      - 8000:8000
+
+    # Environment variables available to the backend.
+    environment:
+
+      # DB_URL is loaded from the .env file.
+      #
+      # The value contains the MongoDB Atlas connection string.
+      DB_URL: ${DB_URL}
+
+    # Automatically react to file changes during development.
+    develop:
+      watch:
+
+        # Rebuild if backend dependencies change.
+        - path: ./backend/package.json
+          action: rebuild
+
+        - path: ./backend/package-lock.json
+          action: rebuild
+
+        # Sync source-code changes into the container.
+        - path: ./backend
+          target: /app
+          action: sync
+
+  # --------------------------------------------------
+  # DATABASE
+  # --------------------------------------------------

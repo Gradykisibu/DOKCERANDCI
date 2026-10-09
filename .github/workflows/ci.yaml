@@ -1,0 +1,103 @@
+#Name of the GitHub Actions workflow
+name: CI
+
+#Define when the workflow should run
+on:
+  #Run when a pull request targets the main branch
+  pull_request:
+    branches: [main]
+  #Run whenever code is pushed to the main branch
+  push:
+    branches: [main]
+
+# Define the jobs in the Continuous Integration (CI) pipeline
+jobs:
+  # Job 1: Install, test, and build the frontend application
+  frontend:
+    # Name displayed in the GitHub Actions interface
+    name: frontend-checks
+    # Run this job on a GitHub-hosted Ubuntu machine
+    runs-on: ubuntu-latest
+
+    # Set the default directory for all shell commands in this job
+    defaults:
+      run:
+        working-directory: frontend
+    
+    # Execute these steps in order
+    steps:
+        # Download the repository source code
+      - name: Get code
+        uses: actions/checkout@v4
+
+        # Set up Node.js version 20
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+        # Install dependencies using the package-lock.json file
+      - name: Install dependencies
+        run: npm ci
+        
+        # Run frontend tests without entering watch mode
+      - name: Run tests
+        run: npm test -- --run
+
+        # Create an optimized production build of the frontend
+      - name: Build frontend
+        run: npm run build
+
+# Job 2: Install and test the backend application
+  backend:
+    # Name displayed in the GitHub Actions interface
+    name: backend-checks
+    # Run this job on a GitHub-hosted Ubuntu machine
+    runs-on: ubuntu-latest
+
+    # Set the default directory for all shell commands in this job
+    defaults:
+      run:
+        working-directory: backend
+
+    # Execute these steps in order
+    steps:
+        # Download the repository source code
+      - name: Get code
+        uses: actions/checkout@v4
+
+        # Set up Node.js version 20
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+        # Install dependencies using the package-lock.json file
+      - name: Install dependencies
+        run: npm ci
+        
+        # Run backend tests to check application behavior
+      - name: Run tests
+        run: npm test
+
+  # Job 3: Build Docker images after the application checks pass
+  docker:
+    # Name displayed in the GitHub Actions interface
+    name: docker-build
+    # Run this job on a GitHub-hosted Ubuntu machine
+    runs-on: ubuntu-latest
+
+    # Wait for both frontend and backend jobs to succeed 
+    # If either job fails, this job is skipped by default
+    needs: [frontend, backend]
+
+    # Execute the Docker build steps
+    steps:
+        # Download the repository source code
+      - name: Get code
+        uses: actions/checkout@v4
+
+        # Build the Docker images defined in the Docker Compose configuration 
+        # This builds the images but does not start the containers
+      - name: Build Docker images
+        run: docker compose build
