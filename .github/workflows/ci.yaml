@@ -3,7 +3,7 @@ name: CI
 
 #Define when the workflow should run
 on:
-  #Run when a pull request targets the main branch
+  #Run when a pull request targets the main branch, when you open a pull request targeting main
   pull_request:
     branches: [main]
   #Run whenever code is pushed to the main branch

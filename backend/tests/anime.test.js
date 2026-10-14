@@ -60,6 +60,23 @@ describe("Anime API", () => {
         expect(res.body).toEqual(records);
     });
 
+    test("GET /api/anime returns anime records", async () => {
+        const items = [
+            {
+                title: "Grady",
+                link: "https://hexample.com",
+                description: "Test description"
+            }
+        ]
+
+        Anim.find.mockResolvedValue(items)
+
+        const res = await request(app).get("/api/anime")
+
+        expect(res.status).toBe(200)
+        expect(res.body).toEqual(items)
+    })
+
     // Test 3: Create an anime record
     test("POST /api/anime saves a record", async () => {
         const input = {
