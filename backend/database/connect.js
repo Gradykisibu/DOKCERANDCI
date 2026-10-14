@@ -15,3 +15,18 @@ function connect() {
 }
 
 module.exports = connect;
+
+
+// const mongoose = require("mongoose");
+
+// async function connect() {
+//   try {
+//     await mongoose.connect(process.env.DB_URL);
+//     console.log("Successfully connected to MongoDB Atlas");
+//   } catch (err) {
+//     console.error("MongoDB connection failed:", err.message);
+//     throw err;
+//   }
+// }
+
+// module.exports = connect;

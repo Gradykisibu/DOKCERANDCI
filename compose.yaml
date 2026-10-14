@@ -10,6 +10,7 @@ services:
   # The Dockerfile is located in ./frontend.
   web:
     build: ./frontend
+    image: kisibugradyswfe/mern-frontend:latest
 
     # Start the API before starting the frontend.
     depends_on:
@@ -49,6 +50,9 @@ services:
   # The Dockerfile is located in ./backend.
   api:
     build: ./backend
+    image: kisibugradyswfe/mern-backend:latest
+
+    
 
     # HOST_PORT:CONTAINER_PORT
     # Open the API at http://localhost:8000
